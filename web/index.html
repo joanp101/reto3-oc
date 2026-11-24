@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agente de Órdenes de Compra SAP</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <header class="header">
+        <div>
+          <h1>Agente de Órdenes de Compra</h1>
+          <p class="subtitle">Reto 03 · Gestión asistida de OC en SAP</p>
+        </div>
+        <div class="header-actions">
+          <span id="health-badge" class="badge">Conectando...</span>
+          <button id="new-session-btn" type="button" class="secondary-btn">Nueva sesión</button>
+        </div>
+      </header>
+
+      <div class="session-bar">
+        <span>Sesión: <code id="session-id-label">—</code></span>
+      </div>
+
+      <section id="chat-log" class="chat-log" aria-label="Historial de conversación"></section>
+
+      <div id="thinking-indicator" class="thinking hidden" role="status" aria-live="polite">
+        Pensando y ejecutando herramientas...
+      </div>
+
+      <form id="chat-form" class="chat-form">
+        <input
+          id="chat-input"
+          type="text"
+          placeholder="Ej: Procesa la solicitud sol-001..."
+          autocomplete="off"
+        />
+        <button id="send-btn" type="submit">Enviar</button>
+      </form>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

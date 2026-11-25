@@ -7,18 +7,18 @@ La analista administrativa digita a mano en SAP cada OC (proveedor, centro de co
 
 ```mermaid
 flowchart LR
-  U[Analista] -->|chat| W["Front web/<br/>historial · tool calls · confirmación"]
-  W -->|POST /api/chat| S["Backend src/server.ts<br/>ciclo del agente · sesiones · tope iteraciones/tokens"]
-  S -->|enviar(mensajes, herramientas)| L["LlmAdapter<br/>src/llm/gemini.ts"]
-  S -->|zod valida args| T["Herramientas src/tools/oc.ts<br/>leer · validar · construir · evidencia · crear"]
-  T -->|solo lectura| F[(fixtures/reto-03<br/>solicitudes + maestros)]
+  U[Analista] -->|"chat"| W["Front web/<br/>historial · tool calls · confirmación"]
+  W -->|"POST /api/chat"| S["Backend src/server.ts<br/>ciclo del agente · sesiones · tope iteraciones/tokens"]
+  S -->|"enviar(mensajes, herramientas)"| L["LlmAdapter<br/>src/llm/gemini.ts"]
+  S -->|"zod valida args"| T["Herramientas src/tools/oc.ts<br/>leer · validar · construir · evidencia · crear"]
+  T -->|"solo lectura"| F[(fixtures/reto-03<br/>solicitudes + maestros)]
   T --> SAP["SapAdapter<br/>src/sap/mock.ts"]
   SAP --> O1[(out/sap/ordenes.jsonl)]
   T --> O2[(out/&lt;caso&gt;/trazabilidad.json<br/>out/&lt;caso&gt;/aprobacion.txt<br/>out/control.csv)]
   S --> O3[(out/log.jsonl)]
-  P[agent/prompt.md] -.comportamiento.-> S
-  K[src/knowledge/ordenes-compra.md] -.conocimiento.-> S
-  D[demo.ts] -->|sin modelo| T
+  P[agent/prompt.md] -.->|"comportamiento"| S
+  K[src/knowledge/ordenes-compra.md] -.->|"conocimiento"| S
+  D[demo.ts] -->|"sin modelo"| T
 ```
 
 - **Comportamiento**: `agent/prompt.md`. **Conocimiento**: `src/knowledge/ordenes-compra.md`. **Ejecución**: `src/tools/oc.ts`.
@@ -29,7 +29,7 @@ flowchart LR
 **Confirmación humana**: el prompt obliga a cerrar el turno con una pregunta y la marca `[CONFIRMACION_REQUERIDA]`; el front lo resalta. Además, `oc_crear` no crea si hay confirmaciones y `confirmado !== true`, aunque el modelo se equivoque.
 
 ## 4. Elección del modelo
-Google Gemini (`@google/genai`), modelo configurable con `GEMINI_MODEL`. Razones: buen soporte de function calling, latencia baja y costo bajo. Costo por caso: ~5 llamadas a herramientas por caso, con pocos miles de tokens por turno; el valor exacto está pendiente de medir con `usageMetadata` (ya se acumula en `tokensUsed` por sesión).
+Google Gemini (`@google/genai`), modelo configurable con `GEMINI_MODEL`. Razones: buen soporte de function calling, latencia baja y costo bajo. Costo por caso: la prueba real de sol-001 por `/api/chat` consumió 57.281 tokens totales en un turno (no se guardó la división entrada/salida). A la tarifa de pago de USD 1,50 por 1M de tokens de entrada y USD 7,50 por 1M de salida, eso queda entre ~USD 0,09 y ~USD 0,43 por caso; en el nivel gratuito, USD 0.
 
 ## 5. Matriz de controles (RC1–RC10)
 Implementada en `validarPaquete()` (`src/tools/oc.ts`), función pura sobre paquete + maestros. Cada hallazgo es `{ codigo, detalle, accion_sugerida }`.
